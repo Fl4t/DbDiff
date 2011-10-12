@@ -1,0 +1,77 @@
+<html lang="fr">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>Comparaison de base de données</title>
+        <link rel="stylesheet" media="screen" type="text/css" title="Design" href="style.css" />
+    </head>
+    <body>
+    <form action="index.php" method="post" id="db-config">
+        <table>
+            <tr>
+                <td><label for="db-host1">Serveur</label></td>
+                <td><label for="db-user1">Utilisateur</label></td>
+                <td><label for="db-password1">Mot de passe</label></td>
+                <td><label for="db-name1">Base de référence</label></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="db-host1" value="localhost" /></td>
+                <td><input type="text" name="db-user1" value="root" /></td>
+                <td><input type="text" name="db-password1" value="root" /></td>
+                <td><input type="text" name="db-name1" value="testsync" /></td>
+            </tr>
+            <tr>
+                <td><label for="db-host2">Serveur</label></td>
+                <td><label for="db-user2">Utilisateur</label></td>
+                <td><label for="db-password1">Mot de passe</label></td>
+                <td><label for="db-name2">Base mise à jour</label></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="db-host2" value="localhost" /></td>
+                <td><input type="text" name="db-user2" value="root" /></td>
+                <td><input type="text" name="db-password2" value="root" /></td>
+                <td><input type="text" name="db-name2" value="testsync2" /></td>
+            </tr>
+            <tr>
+                <td colspan="8" align="center">
+                <input type="submit" value="Comparer" />
+                <input type="reset" value="Effacer"</td>
+            </tr>
+        </table>
+    </form>
+    <p>
+    {if isset($dbdiff)}
+    <!-- HTML & SQL -->
+    <table class="tableauDbDiff">
+        {foreach from=$dbdiff->diffs item=table}
+            {if $table->action != diffDb::ACTION_SAME}
+        <tr class="recapitulatif">
+            <td><strong>{$messHTML[$table->action]}</strong>la table <span class="nomTable">{$table->name}</span><br />
+                {foreach from=$table->fields item=field}
+                    {if $field->action != diffDb::ACTION_SAME}
+                        <strong>{$messHTML[$field->action]}</strong>le champ <span class="nomChamp">
+                        {$field->field->name} : </span>	{$field->field->coltype},
+                        {$field->field->intername}, {$field->field->interclass}, {$field->field->nullable},
+                        {$field->field->coldefault}, {$field->field->extra}, {$field->field->commentaire}<br />
+                    {/if}
+                {/foreach}
+            </td>
+            <td><code>{$messSQL[$table->action]}{$table->name}
+                {if $table->action != DiffDb::ACTION_SAME}
+                    {foreach from=$table->fields item=field}
+                        {if $field->action != DiffDb::ACTION_SAME}
+                            {$messSQLField[$table->action]}{$field->field->name} {$field->field->coltype}
+                            {$field->field->intername} {$field->field->interclass} {$field->field->nullable}
+                            {$field->field->coldefault} {$field->field->extra} {$field->field->commentaire}<br />
+                        {/if}
+                    {/foreach}
+                {/if}
+            </code>
+            </td>
+        </tr>
+        {/if}
+        {/foreach}
+    </table>
+    {/if}
+    </p>
+    </body>
+</html>
