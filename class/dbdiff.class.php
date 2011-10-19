@@ -4,8 +4,6 @@
  * - contraintes
  * - mise à jour automatique
  * - choix de mise à jour
- * - formater les messages des paramètre envoyé a smarty
- * - Supprimer tout les getHTML/SQL en les transformant dans smarty (incomplet)
  */
 
 require_once 'sql.class.php';
@@ -63,11 +61,6 @@ class Champ {
     //public $constype;
     //public $colname;
 
-    //public function getSQL() {
-        //if ($this->name == 'PRIMARY')
-            //$retour .= '<br />PRIMARY KEY (`' . $this->colname . '`)';
-        //return $retour;
-    //}
 
 //}
 
@@ -80,44 +73,6 @@ class Champ {
     public $extra;
     public $commentaire;
 
-    public function getSQL(&$bool) {
-    // VIRGULE
-    if ($bool) {
-        $retour .= '';
-        $bool = false;
-    } else
-        $retour .= ',';
-
-	// TODO changer les () des creates
-
-//	// nullable par defaut 'NULL'
-//	if ($this->nullable == 'NO')
-//	    $messSQL = array($this->nullable => 'NOT NULL');
-//	else
-//	    $messSQL = array($this->nullable => '');
-//
-//	// coldefaut par defaut 'DEFAULT NULL'
-//	if ($this->coldefault == 'NULL') $this->coldefault = '';
-//	if ($this->colkey == 'PRI') {
-//	    $this->colkey = '';
-//	    $primary = true;
-//	}
-//	if ($this->commentaire)
-//	    $this->commentaire = 'COMMENT \'' . $this->commentaire . '\'';
-//	if ($this->intername) {
-//	    $this->intername = 'CONVERT TO CHARACTER SET ' . $this->intername;
-//	    $this->interclass = 'COLLATE ' . $this->interclass;
-//	}
-
-
-	$retour .= '<br />`' . $this->name . '` ' . $this->coltype . ' ' .
-		$messSQL[$this->nullable] . ' ' . $this->colkey . ' ' .
-		$this->coldefault . ' ' . strtoupper($this->extra) . ' ' .
-		$this->intername . ' ' . $this->interclass . ' ' . $this->commentaire;
-	if ($primary)
-	    $retour .= ',<br />PRIMARY KEY (`' . $this->name . '`)';
-	return $retour;
-    }
 }
 
 class DiffBdd {
@@ -222,66 +177,6 @@ class DiffTable {
         }
     }
 
-    public function getHTML() {
-        $messHTML = array(diffDb::ACTION_CREATE => '<strong>créer ',
-            diffDb::ACTION_DROP => '<strong>supprimer ',
-            diffDb::ACTION_ALTER => '<strong>modifier '
-        );
-        //foreach ($this->constraints as $constraint) {
-            //if ($constraint->action != DiffDb::ACTION_SAME && $constraint->action) {
-                //if ($constraint->constraint->name == 'PRIMARY')
-                    //$retour .= $messHTML[$constraint->action] . ' </strong>la clé primaire<code> ' .
-                    //$constraint->constraint->name . '</code><br />';
-                //else
-                    //$retour .= $messHTML[$constraint->action] . ' </strong>la clé étrangère<code> ' .
-                    //$constraint->constraint->name . '</code><br />';
-                //$retour .= $constraint->getHTML();
-            //}
-        //}
-        foreach ($this->fields as $field) {
-            if ($field->action != DiffDb::ACTION_SAME && $field->action) {
-                $retour .= $messHTML[$field->action] . '</strong>le champ : <code>' . $field->field->name . '</code><br />';
-                $retour .= $field->getHTML();
-            }
-        }
-        return $retour;
-    }
-
-    public function getSQL() {
-        $messSQL = array(diffDb::ACTION_CREATE => 'ADD COLUMN ',
-            diffDb::ACTION_DROP => 'DROP COLUMN ',
-            diffDb::ACTION_ALTER => 'MODIFY COLUMN '
-        );
-        $bool = true;
-        foreach ($this->fields as $field) {
-            if ($field->action != DiffDb::ACTION_SAME) {
-                if ($bool) {
-                    $bool = false;
-                } else
-                    $retour .= ',';
-                if ($field->field->name) {
-                    // Si c'est un DiffField
-                    if ($field->action != DiffDb::ACTION_DROP)
-                        $retour .= '<br />' . $messSQL[$field->action] . ' `' . $field->field->name . '` ' . $field->getSQL();
-                    else
-                        $retour .= '<br />' . $messSQL[$field->action] . ' `' . $field->field->name . '`';
-                }
-                // Sinon c'est un Field
-                else
-                    $retour .= '<br />' . $field->getSQL($bool);
-            }
-        }
-        //foreach ($this->constraints as $constraint) {
-            //if ($constraint->action != DiffDb::ACTION_SAME) {
-                //if ($bool) {
-                    //$bool = false;
-                //} else
-                    //$retour .= ',';
-                //$retour .= '<br />' . $constraint->getSQL();
-            //}
-        //}
-        return $retour;
-    }
 }
 
 class DiffChamp {
@@ -323,19 +218,6 @@ class DiffChamp {
             //if ($ConstRef != $ConstMaJ)
                 //$this->action = DiffDb::ACTION_ALTER;
         //}
-    //}
-
-    //public function getHTML() {
-        //$retour .= 'Avec la colonne : <code>' . $this->constraint->colname . '</code><br />';
-        //return $retour;
-    //}
-
-    //public function getSQL() {
-        //if ($this->action == diffdb::ACTION_CREATE && $this->constraint->name == 'PRIMARY KEY')
-            //$retour .= '<br />PRIMARY KEY (`' . $this->constraint->colname . '`)';
-        //else
-            //$retour .= '<br />KEY';
-        //return $retour;
     //}
 //}
 
