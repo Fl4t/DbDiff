@@ -116,3 +116,16 @@ tr.recapitulatif{
 .nomChamp{
     color:blue;
 }
+
+table.attention{
+    border:1px solid;
+    color:red;
+	font-family:Arial,sans-serif;
+	font-size:14px;
+	font-weight:bold;
+	text-decoration:none;
+    text-align:center;
+    border-color:red;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
