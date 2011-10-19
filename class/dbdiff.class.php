@@ -19,16 +19,6 @@ class Bdd {
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = :bdd', array('bdd' => $bddnom));
         foreach ($this->tables as $nomtable) {
-            //$nomtable->constraints = $connexion->execToClasses(
-                //'Constraint', 'SELECT k.constraint_name name,
-                //t.constraint_type constype,
-                //k.column_name colname
-                //FROM information_schema.key_column_usage k
-                //INNER JOIN information_schema.table_constraints t
-                //ON k.constraint_name = t.constraint_name
-                //WHERE k.constraint_schema = :bdd
-                //AND k.table_name = :table
-                //GROUP BY .column_name', array('bdd' => $dbname, 'table' => $nomtable->name));
             $nomtable->champs = $connexion->execToClasses(
                 'Champ', 'SELECT column_name nom,
                 column_type coltype,
@@ -48,21 +38,12 @@ class Bdd {
 
 class Table {
 
-    //public $constraints;
     public $nom;
     public $champs;
 
 }
 
-//class Constraint {
 class Champ {
-
-    //public $name;
-    //public $constype;
-    //public $colname;
-
-
-//}
 
     public $nom;
     public $coltype;
@@ -129,30 +110,6 @@ class DiffTable {
         }
     }
 
-    //protected function CompareConsts($ConstsRef, $ConstsMaJ) {
-        //reset($ConstsRef);
-        //reset($ConstsMaJ);
-        //while (current($ConstsRef) || current($ConstsMaJ)) {
-            //$curDiffConst = new DiffConst(current($ConstsRef), current($ConstsMaJ));
-            //$this->constraints[] = $curDiffConst;
-            //switch ($curDiffConst->action) {
-            //case DiffDb::ACTION_CREATE:
-                //$this->action = DiffDb::ACTION_ALTER;
-                //next($ConstsRef);
-                //break;
-            //case DiffDb::ACTION_DROP:
-                //$this->action = DiffDb::ACTION_ALTER;
-                //next($ConstsMaJ);
-                //break;
-            //default:
-                //if ($curDiffConst->action == DiffDb::ACTION_ALTER)
-                    //$this->action = DiffDb::ACTION_ALTER;
-                //next($ConstsRef);
-                //next($ConstsMaJ);
-            //}
-        //}
-    //}
-
     protected function CompareChamps($champsRef, $champsMaJ) {
         reset($champsRef);
         reset($champsMaJ);
@@ -199,26 +156,5 @@ class DiffChamp {
         }
     }
 }
-
-//class DiffConst {
-
-    //public $action = diffdb::ACTION_SAME;
-    //public $constraint = null;
-
-    //public function __construct($ConstRef, $ConstMaJ) {
-        //$intComparaison = strcmp($ConstRef->name, $ConstMaJ->name);
-        //if (($intComparaison < 0 && $ConstRef) || $ConstMaJ == NULL) {
-            //$this->constraint = $ConstRef;
-            //$this->action = DiffDb::ACTION_CREATE;
-        //} elseif (($intComparaison > 0 && $ConstMaJ) || $ConstRef == NULL) {
-            //$this->constraint = $ConstMaJ;
-            //$this->action = DiffDb::ACTION_DROP;
-        //} else {
-            //$this->constraint = $ConstRef;
-            //if ($ConstRef != $ConstMaJ)
-                //$this->action = DiffDb::ACTION_ALTER;
-        //}
-    //}
-//}
 
 ?>
