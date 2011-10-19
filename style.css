@@ -96,6 +96,11 @@ input[type=submit]:active, input[type=reset]:active, input[type=submit]:focus, i
 	outline:none;
 }
 
+table{
+    margin-left: auto;
+    margin-right: auto;
+}
+
 table.tableauDbdiff{
     border:1px solid;
 }
