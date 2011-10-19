@@ -5,31 +5,31 @@
         <link rel="stylesheet" media="screen" type="text/css" title="Design" href="style.css" />
     </head>
     <body>
-    <form action="index.php" method="post" id="db-config">
+    <form action="index.php" method="post" id="bdd-config">
         <table>
             <tr>
-                <td><label for="db-host1">Serveur</label></td>
-                <td><label for="db-user1">Utilisateur</label></td>
-                <td><label for="db-password1">Mot de passe</label></td>
-                <td><label for="db-name1">Base de référence</label></td>
+                <td><label for="bdd-host1">Serveur</label></td>
+                <td><label for="bdd-user1">Utilisateur</label></td>
+                <td><label for="bdd-password1">Mot de passe</label></td>
+                <td><label for="bdd-nom1">Base de référence</label></td>
             </tr>
             <tr>
-                <td><input type="text" name="db-host1" value="localhost" /></td>
-                <td><input type="text" name="db-user1" value="root" /></td>
-                <td><input type="text" name="db-password1" value="root" /></td>
-                <td><input type="text" name="db-name1" value="testsync" /></td>
+                <td><input type="text" name="bdd-host1" value="localhost" /></td>
+                <td><input type="text" name="bdd-user1" value="root" /></td>
+                <td><input type="text" name="bdd-password1" value="root" /></td>
+                <td><input type="text" name="bdd-nom1" value="testsync" /></td>
             </tr>
             <tr>
-                <td><label for="db-host2">Serveur</label></td>
-                <td><label for="db-user2">Utilisateur</label></td>
-                <td><label for="db-password1">Mot de passe</label></td>
-                <td><label for="db-name2">Base mise à jour</label></td>
+                <td><label for="bdd-host2">Serveur</label></td>
+                <td><label for="bdd-user2">Utilisateur</label></td>
+                <td><label for="bdd-password1">Mot de passe</label></td>
+                <td><label for="bdd-nom2">Base mise à jour</label></td>
             </tr>
             <tr>
-                <td><input type="text" name="db-host2" value="localhost" /></td>
-                <td><input type="text" name="db-user2" value="root" /></td>
-                <td><input type="text" name="db-password2" value="root" /></td>
-                <td><input type="text" name="db-name2" value="testsync2" /></td>
+                <td><input type="text" name="bdd-host2" value="localhost" /></td>
+                <td><input type="text" name="bdd-user2" value="root" /></td>
+                <td><input type="text" name="bdd-password2" value="root" /></td>
+                <td><input type="text" name="bdd-nom2" value="testsync2" /></td>
             </tr>
             <tr>
                 <td colspan="8" align="center">
@@ -39,7 +39,7 @@
         </table>
     </form>
     <p>
-    {if isset($dbdiff)}
+    {if isset($bddDiff)}
     <!-- HTML & SQL -->
     <table class="tableauDbDiff">
         {foreach from=$dbdiff->diffs item=table}

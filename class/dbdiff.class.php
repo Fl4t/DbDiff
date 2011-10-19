@@ -8,18 +8,18 @@
  * - Supprimer tout les getHTML/SQL en les transformant dans smarty (incomplet)
  */
 
-require_once 'iit_SQLQuery.php';
+require_once 'sql.class.php';
 
-class iit_DB {
+class Bdd {
 
     public $tables = null;
 
-    public function __construct($server, $login, $passwd, $dbname) {
-        $connexion = new iit_SQLQuery('mysql', $server, $login, $passwd, 'INFORMATION_SCHEMA');
+    public function __construct($serveur, $login, $mdp, $bddnom) {
+        $connexion = new SQL('mysql', $serveur, $login, $mdp, 'INFORMATION_SCHEMA');
         $this->tables = $connexion->execToClasses(
-            'Table', 'SELECT `TABLE_NAME` name
+            'Table', 'SELECT TABLE_NAME nom
             FROM INFORMATION_SCHEMA.TABLES
-            WHERE `TABLE_SCHEMA` = :bdd', array('bdd' => $dbname));
+            WHERE TABLE_SCHEMA = :bdd', array('bdd' => $bddnom));
         foreach ($this->tables as $nomtable) {
             //$nomtable->constraints = $connexion->execToClasses(
                 //'Constraint', 'SELECT k.constraint_name name,
@@ -31,18 +31,18 @@ class iit_DB {
                 //WHERE k.constraint_schema = :bdd
                 //AND k.table_name = :table
                 //GROUP BY .column_name', array('bdd' => $dbname, 'table' => $nomtable->name));
-            $nomtable->fields = $connexion->execToClasses(
-                'Field', 'SELECT column_name name,
+            $nomtable->champs = $connexion->execToClasses(
+                'Champ', 'SELECT column_name nom,
                 column_type coltype,
-                character_set_name intername,
+                character_set_name internom,
                 collation_name interclass,
                 is_nullable nullable,
-                column_default coldefault,
+                column_default coldefaut,
                 extra,
                 column_comment commentaire
                 FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE table_schema = :bdd
-                AND table_name = :table', array('bdd' => $dbname, 'table' => $nomtable->name));
+                AND table_name = :table', array('bdd' => $bddnom, 'table' => $nomtable->nom));
         }
     }
 
@@ -50,13 +50,14 @@ class iit_DB {
 
 class Table {
 
-    public $name;
     //public $constraints;
-    public $fields;
+    public $nom;
+    public $champs;
 
 }
 
 //class Constraint {
+class Champ {
 
     //public $name;
     //public $constype;
@@ -70,14 +71,12 @@ class Table {
 
 //}
 
-class Field {
-
-    public $name;
+    public $nom;
     public $coltype;
-    public $intername;
+    public $internom;
     public $interclass;
     public $nullable;
-    public $coldefault;
+    public $coldefaut;
     public $extra;
     public $commentaire;
 
@@ -121,7 +120,7 @@ class Field {
     }
 }
 
-class DiffDb {
+class DiffBdd {
 
     public $diffs = array();
 
@@ -130,22 +129,22 @@ class DiffDb {
     CONST ACTION_DROP = 3;
     CONST ACTION_ALTER = 4;
 
-    public function __construct($dbRef, $dbMaJ) {
-        reset($dbRef->tables);
-        reset($dbMaJ->tables);
-        while (current($dbRef->tables) || current($dbMaJ->tables)) {
-            $curDiffTable = new DiffTable(current($dbRef->tables), current($dbMaJ->tables));
+    public function __construct($bddRef, $bddMaJ) {
+        reset($bddRef->tables);
+        reset($bddMaJ->tables);
+        while (current($bddRef->tables) || current($bddMaJ->tables)) {
+            $curDiffTable = new DiffTable(current($bddRef->tables), current($bddMaJ->tables));
             $this->diffs[] = $curDiffTable;
             switch ($curDiffTable->action) {
-            case DiffDb::ACTION_CREATE:
-                next($dbRef->tables);
+            case DiffBdd::ACTION_CREATE:
+                next($bddRef->tables);
                 break;
-            case DiffDb::ACTION_DROP:
-                next($dbMaJ->tables);
+            case DiffBdd::ACTION_DROP:
+                next($bddMaJ->tables);
                 break;
             default:
-                next($dbRef->tables);
-                next($dbMaJ->tables);
+                next($bddRef->tables);
+                next($bddMaJ->tables);
             }
         }
     }
@@ -154,24 +153,24 @@ class DiffDb {
 
 class DiffTable {
 
-    public $name;
-    public $action = diffdb::ACTION_SAME;
-    public $fields = array();
+    public $nom;
+    public $action = Diffbdd::ACTION_SAME;
+    public $champs = array();
 
     public function __construct($tableRef, $tableMaJ) {
-        $intComparaison = strcmp($tableRef->name, $tableMaJ->name);
+        $intComparaison = strcmp($tableRef->nom, $tableMaJ->nom);
         if (($intComparaison < 0 && $tableRef) || $tableMaJ == NULL) {
-            $this->name = $tableRef->name;
+            $this->nom= $tableRef->nom;
             $this->constraints = $tableRef->constraints;
-            $this->action = DiffDb::ACTION_CREATE;
-            $this->fields = $tableRef->fields;
+            $this->action = DiffBdd::ACTION_CREATE;
+            $this->champs = $tableRef->champs;
         } elseif (($intComparaison > 0 && $tableMaJ) || $tableRef == NULL) {
-            $this->name = $tableMaJ->name;
-            $this->action = DiffDb::ACTION_DROP;
+            $this->nom= $tableMaJ->nom;
+            $this->action = DiffBdd::ACTION_DROP;
         } else {
-            $this->name = $tableRef->name;
+            $this->nom= $tableRef->nom;
             //$this->CompareConsts($tableRef->constraints, $tableMaJ->constraints);
-            $this->CompareFields($tableRef->fields, $tableMaJ->fields);
+            $this->CompareChamps($tableRef->champs, $tableMaJ->champs);
         }
     }
 
@@ -199,26 +198,26 @@ class DiffTable {
         //}
     //}
 
-    protected function CompareFields($FieldsRef, $FieldsMaJ) {
-        reset($FieldsRef);
-        reset($FieldsMaJ);
-        while (current($FieldsRef) || current($FieldsMaJ)) {
-            $curDiffField = new DiffField(current($FieldsRef), current($FieldsMaJ));
-            $this->fields[] = $curDiffField;
-            switch ($curDiffField->action) {
-            case DiffDb::ACTION_CREATE:
-                $this->action = DiffDb::ACTION_ALTER;
-                next($FieldsRef);
+    protected function CompareChamps($champsRef, $champsMaJ) {
+        reset($champsRef);
+        reset($champsMaJ);
+        while (current($champsRef) || current($champsMaJ)) {
+            $curDiffChamp = new DiffChamp(current($champsRef), current($champsMaJ));
+            $this->champs[] = $curDiffChamp;
+            switch ($curDiffChamp->action) {
+            case DiffBdd::ACTION_CREATE:
+                $this->action = DiffBdd::ACTION_ALTER;
+                next($champsRef);
                 break;
-            case DiffDb::ACTION_DROP:
-                $this->action = DiffDb::ACTION_ALTER;
-                next($FieldsMaJ);
+            case DiffBdd::ACTION_DROP:
+                $this->action = DiffBdd::ACTION_ALTER;
+                next($champsMaJ);
                 break;
             default:
-                if ($curDiffField->action == DiffDb::ACTION_ALTER)
-                    $this->action = DiffDb::ACTION_ALTER;
-                next($FieldsRef);
-                next($FieldsMaJ);
+                if ($curDiffChamp->action == DiffBdd::ACTION_ALTER)
+                    $this->action = DiffBdd::ACTION_ALTER;
+                next($champsRef);
+                next($champsMaJ);
             }
         }
     }
@@ -285,23 +284,23 @@ class DiffTable {
     }
 }
 
-class DiffField {
+class DiffChamp {
 
-    public $action = diffdb::ACTION_SAME;
-    public $field = null;
+    public $action = Diffbdd::ACTION_SAME;
+    public $champ = null;
 
-    public function __construct($FieldRef, $FieldMaJ) {
-        $intComparaison = strcmp($FieldRef->name, $FieldMaJ->name);
-        if (($intComparaison < 0 && $FieldRef) || $FieldMaJ == NULL) {
-            $this->field = $FieldRef;
-            $this->action = DiffDb::ACTION_CREATE;
-        } elseif (($intComparaison > 0 && $FieldMaJ) || $FieldRef == NULL) {
-            $this->field = $FieldMaJ;
-            $this->action = DiffDb::ACTION_DROP;
+    public function __construct($champRef, $champMaJ) {
+        $intComparaison = strcmp($champRef->nom, $champMaJ->nom);
+        if (($intComparaison < 0 && $champRef) || $champMaJ == NULL) {
+            $this->champ = $champRef;
+            $this->action = DiffBdd::ACTION_CREATE;
+        } elseif (($intComparaison > 0 && $champMaJ) || $champRef == NULL) {
+            $this->champ = $champMaJ;
+            $this->action = DiffBdd::ACTION_DROP;
         } else {
-            $this->field = $FieldRef;
-            if ($FieldRef != $FieldMaJ)
-                $this->action = DiffDb::ACTION_ALTER;
+            $this->champ = $champRef;
+            if ($champRef != $champMaJ)
+                $this->action = DiffBdd::ACTION_ALTER;
         }
     }
 }

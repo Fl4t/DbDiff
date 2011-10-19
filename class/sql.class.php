@@ -1,6 +1,6 @@
 <?php
 
-class iit_SQLQuery extends PDO {
+class SQL extends PDO {
     protected $driver;
     protected $serverName;
     protected $loginName;
