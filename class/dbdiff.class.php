@@ -97,7 +97,6 @@ class DiffTable {
         $intComparaison = strcmp($tableRef->nom, $tableMaJ->nom);
         if (($intComparaison < 0 && $tableRef) || $tableMaJ == NULL) {
             $this->nom= $tableRef->nom;
-            $this->constraints = $tableRef->constraints;
             $this->action = DiffBdd::ACTION_CREATE;
             $this->champs = $tableRef->champs;
         } elseif (($intComparaison > 0 && $tableMaJ) || $tableRef == NULL) {
@@ -105,7 +104,6 @@ class DiffTable {
             $this->action = DiffBdd::ACTION_DROP;
         } else {
             $this->nom= $tableRef->nom;
-            //$this->CompareConsts($tableRef->constraints, $tableMaJ->constraints);
             $this->CompareChamps($tableRef->champs, $tableMaJ->champs);
         }
     }
