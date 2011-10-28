@@ -40,37 +40,35 @@
     </form>
     <p>
     {if isset($bddDiff)}
-    <!-- HTML & SQL -->
-    <table class="tableauDbDiff">
-        {foreach from=$dbdiff->diffs item=table}
-            {if $table->action != diffDb::ACTION_SAME}
-        <tr class="recapitulatif">
-            <td><strong>{$messHTML[$table->action]}</strong>la table <span class="nomTable">{$table->name}</span><br />
-                {foreach from=$table->fields item=field}
-                    {if $field->action != diffDb::ACTION_SAME}
-                        <strong>{$messHTML[$field->action]}</strong>le champ <span class="nomChamp">
-                        {$field->field->name} : </span>	{$field->field->coltype},
-                        {$field->field->intername}, {$field->field->interclass}, {$field->field->nullable},
-                        {$field->field->coldefault}, {$field->field->extra}, {$field->field->commentaire}<br />
-                    {/if}
-                {/foreach}
-            </td>
-            <td><code>{$messSQL[$table->action]}{$table->name}
-                {if $table->action != DiffDb::ACTION_SAME}
-                    {foreach from=$table->fields item=field}
-                        {if $field->action != DiffDb::ACTION_SAME}
-                            {$messSQLField[$table->action]}{$field->field->name} {$field->field->coltype}
-                            {$field->field->intername} {$field->field->interclass} {$field->field->nullable}
-                            {$field->field->coldefault} {$field->field->extra} {$field->field->commentaire}<br />
+        <!-- HTML & SQL -->
+        <table class="tableauBddDiff">
+            {foreach from=$bddDiff->diffs item=diffTable}
+                {if $diffTable->action != diffBdd::ACTION_SAME}
+                    <tr class="recapitulatif">
+                    <td><strong>{$messHTMLTable[$diffTable->action]}</strong>
+                    la table <span class="nomTable">{$diffTable->nom}</span><br />
+                    {foreach from=$diffTable->champs item=diffChamp}
+                        {if $diffChamp->action != diffBdd::ACTION_SAME}
+                            <strong>{$messHTMLChamp[$diffChamp->action]}</strong>
+                            le champ <span class="nomChamp">{$diffChamp->champ->nom} :</span><br />
                         {/if}
                     {/foreach}
+                    </td>
+                    <td>
+                    <code>{$messSQLTable[$diffTable->action]}{$diffTable->nom}<br />
+                    {foreach from=$diffTable->champs item=diffChamp}
+                        {if $diffChamp->action != DiffBdd::ACTION_SAME}
+                            {$messSQLChamp[$diffChamp->action]}{$diffChamp->champ->nom} {$diffChamp->champ->coltype}
+                            {$diffChamp->champ->internom} {$diffChamp->champ->interclass} {$diffChamp->champ->nullable}
+                            {$diffChamp->champ->coldefaut} {$diffChamp->champ->extra} {$diffChamp->champ->commentaire}<br />
+                        {/if}
+                    {/foreach}
+                    </code>
+                    </td>
+                    </tr>
                 {/if}
-            </code>
-            </td>
-        </tr>
-        {/if}
-        {/foreach}
-    </table>
+            {/foreach}
+        </table>
     {/if}
     </p>
     </body>

@@ -13,15 +13,29 @@ if (isset($_POST['bdd-host1'])) {
 	DiffBdd::ACTION_ALTER => 'modifier '
     );
 
+    $messHTMLChamp = array(NULL => 'avec ',
+    DiffBdd::ACTION_CREATE => 'créer ',
+	DiffBdd::ACTION_DROP => 'supprimer ',
+	DiffBdd::ACTION_ALTER => 'modifier '
+    );
+
     $messSQLTable = array(DiffBdd::ACTION_CREATE => 'CREATE TABLE IF NOT EXISTS ',
 	DiffBdd::ACTION_DROP => 'DROP TABLE ',
 	DiffBdd::ACTION_ALTER => 'ALTER TABLE '
+    );
+
+    $messSQLChamp = array(DiffBdd::ACTION_CREATE => 'ADD COLUMN ',
+	DiffBdd::ACTION_DROP => 'DROP COLUMN ',
+	DiffBdd::ACTION_ALTER => 'ALTER COLUMN '
     );
 }
 
 $smarty = new Smarty();
 $smarty->assign('bddDiff', $bddDiff);
 $smarty->assign('messHTMLTable', $messHTMLTable);
+$smarty->assign('messHTMLChamp', $messHTMLChamp);
 $smarty->assign('messSQLTable', $messSQLTable);
+$smarty->assign('messSQLChamp', $messSQLChamp);
 $smarty->display('index.html');
+
 ?>
