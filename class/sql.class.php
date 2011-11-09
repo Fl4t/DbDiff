@@ -24,7 +24,7 @@ class SQL extends PDO {
     }
 
     public function execToClasses($className, $query, $paramArray=null) {
-        $statement = $this->exec($query,$paramArray);
+        $statement = $this->exec($query, $paramArray);
         return $statement->fetchAll(PDO::FETCH_CLASS, $className);
     }
 }
