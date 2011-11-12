@@ -10,102 +10,171 @@ require_once 'sql.class.php';
 
 class Bdd {
 
-    public $tableauDeTables = null;
+    protected $tableauDeTables = array();
 
     public function __construct($serveur, $login, $mdp, $bddNom) {
         $connexion = new SQL('mysql', $serveur, $login, $mdp, 'INFORMATION_SCHEMA');
-        $this->tableauDeTables = $connexion->execToClasses(
-            'Table', 'SELECT TABLE_NAME nom
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = :bdd', array('bdd' => $bddNom));
+        $this->tableauDeTables = $connexion->execToClasses('Table',
+                                                           'SELECT TABLE_NAME nom
+                                                           FROM INFORMATION_SCHEMA.TABLES
+                                                           WHERE TABLE_SCHEMA = :bdd',
+                                                           array('bdd' => $bddNom));
         foreach ($this->tableauDeTables as $nomTable) {
-            $nomTable->tableauDeChamps = $connexion->execToClasses(
-                'Champ', 'SELECT column_name nom,
-                column_type coltype,
-                character_set_name internom,
-                collation_name interclass,
-                is_nullable nullable,
-                column_default coldefaut,
-                extra,
-                column_comment commentaire
-                FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE table_schema = :bdd
-                AND table_name = :table', array('bdd' => $bddNom, 'table' => $nomTable->nom));
+            $nomTable->setTableauDeChamps($connexion->execToClasses('Champ',
+                                                                    'SELECT column_name nom,
+                                                                    column_type coltype,
+                                                                    character_set_name internom,
+                                                                    collation_name interclass,
+                                                                    is_nullable nullable,
+                                                                    column_default coldefaut,
+                                                                    extra,
+                                                                    column_comment commentaire
+                                                                    FROM INFORMATION_SCHEMA.COLUMNS
+                                                                    WHERE table_schema = :bdd AND table_name = :table',
+                                                                    array('bdd' => $bddNom,
+                                                                    'table' => $nomTable->getNom())));
         }
+    }
+
+    public function getTableauDeTables() {
+        return $this->tableauDeTables;
     }
 
 }
 
 class Table {
 
-    public $nom;
-    public $tableauDeChamps;
+    protected $nom;
+    protected $tableauDeChamps = array();
 
+    public function getNom() {
+        return $this->nom;
+    }
+
+    public function getTableauDeChamps() {
+        return $this->tableauDeChamps;
+    }
+
+    public function setTableauDeChamps($prmTab) {
+        $this->tableauDeChamps = $prmTab;
+    }
 }
 
 class Champ {
 
-    public $nom;
-    public $coltype;
-    public $internom;
-    public $interclass;
-    public $nullable;
-    public $coldefaut;
-    public $extra;
-    public $commentaire;
+    protected $nom;
+    protected $coltype;
+    protected $internom;
+    protected $interclass;
+    protected $nullable;
+    protected $coldefaut;
+    protected $extra;
+    protected $commentaire;
+
+    // Accesseur
+    public function getNom() {
+        return $this->nom;
+    }
+
+    public function getColtype() {
+        return $this->coltype;
+    }
+
+    public function getInternom() {
+        return $this->internom;
+    }
+
+    public function getInterclass() {
+        return $this->interclass;
+    }
+
+    public function getNullable() {
+        return $this->nullable;
+    }
+
+    public function getColdefaut() {
+        return $this->coldefaut;
+    }
+
+    public function getExtra() {
+        return $this->extra;
+    }
+
+    public function getCommentaire() {
+        return $this->commentaire;
+    }
 
 }
 
 class DiffBdd {
 
-    public $tableauDeDiffs = array();
+    protected $tableauDeDiffs = array();
 
-    CONST ACTION_SAME = 1;
-    CONST ACTION_CREATE = 2;
-    CONST ACTION_DROP = 3;
-    CONST ACTION_ALTER = 4;
+    const ACTION_SAME = 1;
+    const ACTION_CREATE = 2;
+    const ACTION_DROP = 3;
+    const ACTION_ALTER = 4;
 
     public function __construct($bddDeRef, $bddAMaJ) {
-        reset($bddDeRef->tableauDeTables);
-        reset($bddAMaJ->tableauDeTables);
-        while (current($bddDeRef->tableauDeTables) || current($bddAMaJ->tableauDeTables)) {
-            $curDiffTable = new DiffTable(current($bddDeRef->tableauDeTables), current($bddAMaJ->tableauDeTables));
+        $tablesDeRef = $bddDeRef->getTableauDeTables();
+        $tablesAMaJ = $bddAMaJ->getTableauDeTables();
+        reset($tablesDeRef);
+        reset($tablesAMaJ);
+        while (current($tablesDeRef) || current($tablesAMaJ)) {
+            $curDiffTable = new DiffTable(current($tablesDeRef), current($tablesAMaJ));
             $this->tableauDeDiffs[] = $curDiffTable;
-            switch ($curDiffTable->action) {
+            switch ($curDiffTable->getAction()) {
             case DiffBdd::ACTION_CREATE:
-                next($bddDeRef->tableauDeTables);
+                next($tablesDeRef);
                 break;
             case DiffBdd::ACTION_DROP:
-                next($bddAMaJ->tableauDeTables);
+                next($tablesAMaJ);
                 break;
             default:
-                next($bddDeRef->tableauDeTables);
-                next($bddAMaJ->tableauDeTables);
+                next($tablesDeRef);
+                next($tablesAMaJ);
             }
         }
+    }
+
+    public function getTableauDeDiffs() {
+        return $this->tableauDeDiffs;
     }
 
 }
 
 class DiffTable {
 
-    public $nom;
-    public $action = Diffbdd::ACTION_SAME;
-    public $tableauDeChamps = array();
+    protected $nom;
+    protected $action = Diffbdd::ACTION_SAME;
+    protected $tableauDeChamps = array();
 
     public function __construct($tableDeRef, $tableAMaJ) {
-        $intComparaison = strcmp($tableDeRef->nom, $tableAMaJ->nom);
+        $intComparaison = strcmp((is_object($tableDeRef) ? $tableDeRef->getNom() : null),
+                                 (is_object($tableAMaJ) ? $tableAMaJ->getNom() : null));
         if (($intComparaison < 0 && $tableDeRef) || $tableAMaJ == NULL) {
-            $this->nom = $tableDeRef->nom;
+            $this->nom = $tableDeRef->getNom();
             $this->action = DiffBdd::ACTION_CREATE;
-            $this->tableauDeChamps = $tableDeRef->tableauDeChamps;
+            $this->tableauDeChamps = $tableDeRef->getTableauDeChamps();
         } elseif (($intComparaison > 0 && $tableAMaJ) || $tableDeRef == NULL) {
-            $this->nom = $tableAMaJ->nom;
+            $this->nom = $tableAMaJ->getNom();
             $this->action = DiffBdd::ACTION_DROP;
         } else {
-            $this->nom = $tableDeRef->nom;
-            $this->CompareLesChamps($tableDeRef->tableauDeChamps, $tableAMaJ->tableauDeChamps);
+            $this->nom = $tableDeRef->getNom();
+            $this->CompareLesChamps($tableDeRef->getTableauDeChamps(), $tableAMaJ->getTableauDeChamps());
         }
+    }
+
+    public function getNom() {
+        return $this->nom;
+    }
+
+    public function getAction() {
+        return $this->action;
+    }
+
+    public function getTableauDeChamps() {
+        return $this->tableauDeChamps;
     }
 
     protected function CompareLesChamps($champsDeRef, $champsAMaJ) {
@@ -114,7 +183,7 @@ class DiffTable {
         while (current($champsDeRef) || current($champsAMaJ)) {
             $curDiffChamp = new DiffChamp(current($champsDeRef), current($champsAMaJ));
             $this->tableauDeChamps[] = $curDiffChamp;
-            switch ($curDiffChamp->action) {
+            switch ($curDiffChamp->getAction()) {
             case DiffBdd::ACTION_CREATE:
                 $this->action = DiffBdd::ACTION_ALTER;
                 next($champsDeRef);
@@ -124,7 +193,7 @@ class DiffTable {
                 next($champsAMaJ);
                 break;
             default:
-                if ($curDiffChamp->action == DiffBdd::ACTION_ALTER)
+                if ($curDiffChamp->getAction() == DiffBdd::ACTION_ALTER)
                     $this->action = DiffBdd::ACTION_ALTER;
                 next($champsDeRef);
                 next($champsAMaJ);
@@ -136,11 +205,12 @@ class DiffTable {
 
 class DiffChamp {
 
-    public $action = Diffbdd::ACTION_SAME;
-    public $champ = null;
+    protected $action = Diffbdd::ACTION_SAME;
+    protected $champ;
 
     public function __construct($champDeRef, $champAMaJ) {
-        $intComparaison = strcmp($champDeRef->nom, $champAMaJ->nom);
+        $intComparaison = strcmp((is_object($champDeRef) ? $champDeRef->getNom() : null),
+                                 (is_object($champAMaJ) ? $champAMaJ->getNom() : null));
         if (($intComparaison < 0 && $champDeRef) || $champAMaJ == NULL) {
             $this->champ = $champDeRef;
             $this->action = DiffBdd::ACTION_CREATE;
@@ -152,6 +222,18 @@ class DiffChamp {
             if ($champDeRef != $champAMaJ)
                 $this->action = DiffBdd::ACTION_ALTER;
         }
+    }
+
+    public function getAction() {
+        return $this->action;
+    }
+
+    public function getChamp() {
+        return $this->champ;
+    }
+
+    public function setAction($prmAction) {
+        $this->action = $prmAction;
     }
 }
 
