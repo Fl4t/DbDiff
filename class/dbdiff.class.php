@@ -23,14 +23,10 @@ class Bdd {
             $nomTable->setTableauDeChamps($connexion->execToClasses('Champ',
                                                                     'SELECT column_name nom,
                                                                     column_type coltype,
-                                                                    character_set_name internom,
-                                                                    collation_name interclass,
-                                                                    is_nullable nullable,
-                                                                    column_default coldefaut,
-                                                                    extra,
-                                                                    column_comment commentaire
+                                                                    if(is_nullable = \'NO\',\'NOT NULL\',\'NULL\') nullable
                                                                     FROM INFORMATION_SCHEMA.COLUMNS
-                                                                    WHERE table_schema = :bdd AND table_name = :table',
+                                                                    WHERE table_schema = :bdd AND table_name = :table
+                                                                    ORDER BY nom',
                                                                     array('bdd' => $bddNom,
                                                                     'table' => $nomTable->getNom())));
         }

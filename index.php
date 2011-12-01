@@ -24,9 +24,9 @@ if (isset($_POST['bdd-host1'])) {
 	DiffBdd::ACTION_ALTER => 'ALTER TABLE '
     );
 
-    $messSQLChamp = array(DiffBdd::ACTION_CREATE => 'ADD COLUMN ',
+    $messSQLChamp = array(DiffBdd::ACTION_CREATE => 'ADD ',
 	DiffBdd::ACTION_DROP => 'DROP COLUMN ',
-	DiffBdd::ACTION_ALTER => 'ALTER COLUMN '
+	DiffBdd::ACTION_ALTER => 'MODIFY COLUMN '
     );
 }
 

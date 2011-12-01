@@ -67,13 +67,15 @@
                             {if $diffDeTable->getAction() != diffBdd::ACTION_SAME}
                                 {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp}
                                     {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
-                                        {$messSQLChamp[diffBdd::ACTION_CREATE]}
                                         {$diffDeChamp->getNom()} {$diffDeChamp->getColtype()}
                                         {$diffDeChamp->getNullable()}<br />
                                     {elseif $diffDeChamp->getAction() != DiffBdd::ACTION_SAME}
                                         {assign var='champ' value=$diffDeChamp->getChamp()}
                                         {$messSQLChamp[$diffDeChamp->getAction()]}{$champ->getNom()}
-                                        {$champ->getColtype()} {$champ->getNullable()}<br />
+                                        {if $diffDeChamp->getAction() != DiffBdd::ACTION_DROP}
+                                            {$champ->getColtype()} {$champ->getNullable()}
+                                        {/if}
+                                        {if $smarty.foreach.diff.last}{else},{/if}<br />
                                     {/if}
                                 {/foreach}
                             {/if}
