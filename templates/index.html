@@ -34,14 +34,15 @@
                     </tr>
                     <tr>
                         <td colspan="8" align="center">
-                        <input type="submit" value="Comparer" />
-                        <input type="reset" value="Effacer"</td>
+                            <input type="submit" value="Comparer" />
+                            <input type="reset" value="Effacer" />
+                        </td>
                     </tr>
                 </table>
             </form>
         </div>
-        <div id="reponse">
             {if isset($bddDiff)}
+            <div id="reponse">
                 <!-- HTML & SQL -->
                 <table id="tableauBddDiff">
                     {foreach from=$bddDiff->getTableauDeDiffs() item=diffDeTable}
@@ -82,13 +83,8 @@
                             </tr>
                         {/if}
                     {/foreach}
-                    </code>
-                    </td>
-                    </tr>
-                {/if}
-            {/foreach}
-        </table>
-    {/if}
-    </p>
+                </table>
+            </div>
+            {/if}
     </body>
 </html>
