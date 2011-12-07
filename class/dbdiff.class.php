@@ -64,12 +64,7 @@ class Champ {
 
     protected $nom;
     protected $coltype;
-    protected $internom;
-    protected $interclass;
     protected $nullable;
-    protected $coldefaut;
-    protected $extra;
-    protected $commentaire;
 
     // Accesseur
     public function getNom() {
@@ -80,30 +75,9 @@ class Champ {
         return $this->coltype;
     }
 
-    public function getInternom() {
-        return $this->internom;
-    }
-
-    public function getInterclass() {
-        return $this->interclass;
-    }
-
     public function getNullable() {
         return $this->nullable;
     }
-
-    public function getColdefaut() {
-        return $this->coldefaut;
-    }
-
-    public function getExtra() {
-        return $this->extra;
-    }
-
-    public function getCommentaire() {
-        return $this->commentaire;
-    }
-
 }
 
 class DiffBdd {
