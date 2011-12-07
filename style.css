@@ -26,6 +26,20 @@ body {
     padding-bottom:10px;
 }
 
+#reponse-verte {
+    text-align: center;
+	border:3px solid #458B00;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	-moz-box-shadow:0 0 15px #aaa;
+	-webkit-box-shadow:0 0 15px #aaa;
+	margin:20px auto 10px;
+	width:705px;
+	font-family:Verdana,sans-serif;
+	font-size:22px;
+	color: #458B00;
+}
+
 .nomTable {
     color:blue;
 }

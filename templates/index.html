@@ -41,7 +41,11 @@
                 </table>
             </form>
         </div>
-            {if isset($bddDiff)}
+        {if isset($bddDiff) AND $bddDiff->getTableauDeDiffs() == null}
+            <div id="reponse-verte">
+                <p>Aucune différence n'a été trouvé !</p>
+            </div>
+        {elseif isset($bddDiff)}
             <div id="reponse">
                 <!-- HTML & SQL -->
                 <table id="tableauBddDiff">
@@ -84,6 +88,6 @@
                     {/foreach}
                 </table>
             </div>
-            {/if}
+        {/if}
     </body>
 </html>
