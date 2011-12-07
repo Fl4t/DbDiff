@@ -92,14 +92,17 @@ class DiffBdd {
         reset($tablesAMaJ);
         while (current($tablesDeRef) || current($tablesAMaJ)) {
             $curDiffTable = new DiffTable(current($tablesDeRef), current($tablesAMaJ));
-            $this->tableauDeDiffs[] = $curDiffTable;
             switch ($curDiffTable->getAction()) {
             case DiffBdd::ACTION_CREATE:
+                $this->tableauDeDiffs[] = $curDiffTable;
                 next($tablesDeRef);
                 break;
             case DiffBdd::ACTION_DROP:
+                $this->tableauDeDiffs[] = $curDiffTable;
                 next($tablesAMaJ);
                 break;
+            case DiffBdd::ACTION_ALTER:
+                $this->tableauDeDiffs[] = $curDiffTable;
             default:
                 next($tablesDeRef);
                 next($tablesAMaJ);
@@ -152,19 +155,21 @@ class DiffTable {
         reset($champsAMaJ);
         while (current($champsDeRef) || current($champsAMaJ)) {
             $curDiffChamp = new DiffChamp(current($champsDeRef), current($champsAMaJ));
-            $this->tableauDeChamps[] = $curDiffChamp;
             switch ($curDiffChamp->getAction()) {
             case DiffBdd::ACTION_CREATE:
                 $this->action = DiffBdd::ACTION_ALTER;
+                $this->tableauDeChamps[] = $curDiffChamp;
                 next($champsDeRef);
                 break;
             case DiffBdd::ACTION_DROP:
                 $this->action = DiffBdd::ACTION_ALTER;
+                $this->tableauDeChamps[] = $curDiffChamp;
                 next($champsAMaJ);
                 break;
+            case DiffBdd::ACTION_ALTER:
+                $this->action = DiffBdd::ACTION_ALTER;
+                $this->tableauDeChamps[] = $curDiffChamp;
             default:
-                if ($curDiffChamp->getAction() == DiffBdd::ACTION_ALTER)
-                    $this->action = DiffBdd::ACTION_ALTER;
                 next($champsDeRef);
                 next($champsAMaJ);
             }

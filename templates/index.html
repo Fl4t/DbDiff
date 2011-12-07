@@ -46,10 +46,10 @@
                 <!-- HTML & SQL -->
                 <table id="tableauBddDiff">
                     {foreach from=$bddDiff->getTableauDeDiffs() item=diffDeTable}
-                        {if $diffDeTable->getAction() != diffBdd::ACTION_SAME}
-                            <tr>
-                            <td><strong>{$messHTMLTable[$diffDeTable->getAction()]}</strong>
-                            la table <span class="nomTable">{$diffDeTable->getNom()}</span><br />
+                        <tr>
+                            <td>
+                                <strong>{$messHTMLTable[$diffDeTable->getAction()]}</strong>
+                                la table <span class="nomTable">{$diffDeTable->getNom()}</span><br />
                                 {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp}
                                     {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
                                         <strong>{$messHTMLChamp[diffBdd::ACTION_CREATE]}</strong>
@@ -61,29 +61,26 @@
                                 {/foreach}
                             </td>
                             <td>
-                            <code>
-                            {$messSQLTable[$diffDeTable->getAction()]}{$diffDeTable->getNom()}
-                            {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}(<br />{else}<br />{/if}
-                            {if $diffDeTable->getAction() != diffBdd::ACTION_SAME}
-                                {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp}
-                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
-                                        {$diffDeChamp->getNom()} {$diffDeChamp->getColtype()}
-                                        {$diffDeChamp->getNullable()}<br />
-                                    {elseif $diffDeChamp->getAction() != DiffBdd::ACTION_SAME}
-                                        {assign var='champ' value=$diffDeChamp->getChamp()}
-                                        {$messSQLChamp[$diffDeChamp->getAction()]}{$champ->getNom()}
-                                        {if $diffDeChamp->getAction() != DiffBdd::ACTION_DROP}
-                                            {$champ->getColtype()} {$champ->getNullable()}
-                                        {/if}
-                                        {if $smarty.foreach.diff.last}{else},{/if}<br />
-                                    {/if}
-                                {/foreach}
-                            {/if}
-                            {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}){/if}
-                            </code>
+                                <code>
+                                    {$messSQLTable[$diffDeTable->getAction()]}{$diffDeTable->getNom()}
+                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}(<br />{else}<br />{/if}
+                                        {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp name=diff}
+                                            {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
+                                                {$diffDeChamp->getNom()} {$diffDeChamp->getColtype()}
+                                                {$diffDeChamp->getNullable()}
+                                            {else $diffDeTable->getAction() != diffBdd::ACTION_ALTER}
+                                                {assign var='champ' value=$diffDeChamp->getChamp()}
+                                                {$messSQLChamp[$diffDeChamp->getAction()]}{$champ->getNom()}
+                                                {if $diffDeChamp->getAction() != DiffBdd::ACTION_DROP}
+                                                    {$champ->getColtype()} {$champ->getNullable()}
+                                                {/if}
+                                            {/if}
+                                            {if $smarty.foreach.diff.last}{else},{/if}<br />
+                                        {/foreach}
+                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}){/if}
+                                </code>
                             </td>
-                            </tr>
-                        {/if}
+                        </tr>
                     {/foreach}
                 </table>
             </div>
