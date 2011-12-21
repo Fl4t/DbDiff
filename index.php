@@ -1,7 +1,10 @@
 <?php
 
-require_once("class/Smarty.class.php");
-require_once("class/dbdiff.class.php");
+// définition de la constante Smarty
+define('SMARTY_DIR', './Smarty-git/libs/');
+
+require_once(SMARTY_DIR.'Smarty.class.php');
+require_once('class/dbdiff.class.php');
 
 if (isset($_POST['bdd-host1'])) {
     $bddRef = new Bdd($_POST['bdd-host1'], $_POST['bdd-user1'], $_POST['bdd-password1'], $_POST['bdd-nom1']);
