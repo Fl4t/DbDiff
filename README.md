@@ -1,12 +1,11 @@
 # Dbdiff - Comparateur de base de données
 
-Travail réalisé durant mon stage de première année.
-Repris pour la PTI objet.
+Travail réalisé durant mon stage de première année, repris pour la PTI objet.
 
 ## Dépendances
 
-PHP 5.X.X
-Smarty
+* PHP 5.X.X
+* Smarty
 
 ## Installation de smarty
 
