@@ -1,3 +1,4 @@
 [submodule "Smarty-git"]
 	path = Smarty-git
 	url = git@github.com:Fl4t/Smarty-git.git
+  ignore = dirty
