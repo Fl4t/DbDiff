@@ -1,93 +1,93 @@
 <html lang="fr">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>Comparaison de base de données</title>
-        <link rel="stylesheet" media="screen" type="text/css" title="Design" href="style.css" />
-    </head>
-    <body>
-        <div id="formulaire">
-            <form action="index.php" method="post" id="bdd-config">
-                <table>
-                    <tr>
-                        <td><label for="bdd-host1">Serveur</label></td>
-                        <td><label for="bdd-user1">Utilisateur</label></td>
-                        <td><label for="bdd-password1">Mot de passe</label></td>
-                        <td><label for="bdd-nom1">Base de référence</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type="text" name="bdd-host1" value="localhost" /></td>
-                        <td><input type="text" name="bdd-user1" value="root" /></td>
-                        <td><input type="text" name="bdd-password1" value="root" /></td>
-                        <td><input type="text" name="bdd-nom1" value="testsync" /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="bdd-host2">Serveur</label></td>
-                        <td><label for="bdd-user2">Utilisateur</label></td>
-                        <td><label for="bdd-password1">Mot de passe</label></td>
-                        <td><label for="bdd-nom2">Base mise à jour</label></td>
-                    </tr>
-                    <tr>
-                        <td><input type="text" name="bdd-host2" value="localhost" /></td>
-                        <td><input type="text" name="bdd-user2" value="root" /></td>
-                        <td><input type="text" name="bdd-password2" value="root" /></td>
-                        <td><input type="text" name="bdd-nom2" value="testsync2" /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="8" align="center">
-                            <input type="submit" value="Comparer" />
-                            <input type="reset" value="Effacer" />
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        {if isset($bddDiff) AND $bddDiff->getTableauDeDiffs() == null}
-            <div id="reponse-verte">
-                <p>Aucune différence n'a été trouvé !</p>
-            </div>
-        {elseif isset($bddDiff)}
-            <div id="reponse">
-                <!-- HTML & SQL -->
-                <table id="tableauBddDiff">
-                    {foreach from=$bddDiff->getTableauDeDiffs() item=diffDeTable}
-                        <tr>
-                            <td>
-                                <strong>{$messHTMLTable[$diffDeTable->getAction()]}</strong>
-                                la table <span class="nomTable">{$diffDeTable->getNom()}</span><br />
-                                {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp}
-                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
-                                        <strong>{$messHTMLChamp[diffBdd::ACTION_CREATE]}</strong>
-                                        le champ <span class="nomChamp">{$diffDeChamp->getNom()}</span><br />
-                                    {elseif $diffDeChamp->getAction() != diffBdd::ACTION_SAME}
-                                        <strong>{$messHTMLChamp[$diffDeChamp->getAction()]}</strong>
-                                        le champ <span class="nomChamp">{$diffDeChamp->getChamp()->getNom()}</span><br />
-                                    {/if}
-                                {/foreach}
-                            </td>
-                            <td>
-                                <code>
-                                    {$messSQLTable[$diffDeTable->getAction()]}{$diffDeTable->getNom()}
-                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}(<br />{else}<br />{/if}
-                                        {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp name=diff}
-                                            {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
-                                                {$diffDeChamp->getNom()} {$diffDeChamp->getColtype()}
-                                                {$diffDeChamp->getNullable()}
-                                            {else $diffDeTable->getAction() != diffBdd::ACTION_ALTER}
-                                                {assign var='champ' value=$diffDeChamp->getChamp()}
-                                                {$messSQLChamp[$diffDeChamp->getAction()]}{$champ->getNom()}
-                                                {if $diffDeChamp->getAction() != DiffBdd::ACTION_DROP}
-                                                    {$champ->getColtype()} {$champ->getNullable()}
-                                                {/if}
-                                            {/if}
-                                            {if $smarty.foreach.diff.last}{else},{/if}<br />
-                                        {/foreach}
-                                    {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}){/if}
-                                </code>
-                            </td>
-                        </tr>
-                    {/foreach}
-                </table>
-            </div>
-        {/if}
-    </body>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Comparaison de base de données</title>
+    <link rel="stylesheet" media="screen" type="text/css" title="Design" href="style.css" />
+  </head>
+  <body>
+    <div id="formulaire">
+      <form action="index.php" method="post" id="bdd-config">
+        <table>
+          <tr>
+            <td><label for="bdd-host1">Serveur</label></td>
+            <td><label for="bdd-user1">Utilisateur</label></td>
+            <td><label for="bdd-password1">Mot de passe</label></td>
+            <td><label for="bdd-nom1">Base de référence</label></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="bdd-host1" value="localhost" /></td>
+            <td><input type="text" name="bdd-user1" value="root" /></td>
+            <td><input type="text" name="bdd-password1" value="root" /></td>
+            <td><input type="text" name="bdd-nom1" value="testsync" /></td>
+          </tr>
+          <tr>
+            <td><label for="bdd-host2">Serveur</label></td>
+            <td><label for="bdd-user2">Utilisateur</label></td>
+            <td><label for="bdd-password1">Mot de passe</label></td>
+            <td><label for="bdd-nom2">Base mise à jour</label></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="bdd-host2" value="localhost" /></td>
+            <td><input type="text" name="bdd-user2" value="root" /></td>
+            <td><input type="text" name="bdd-password2" value="root" /></td>
+            <td><input type="text" name="bdd-nom2" value="testsync2" /></td>
+          </tr>
+          <tr>
+            <td colspan="8" align="center">
+              <input type="submit" value="Comparer" />
+              <input type="reset" value="Effacer" />
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    {if isset($bddDiff) AND $bddDiff->getTableauDeDiffs() == null}
+    <div id="reponse-verte">
+      <p>Aucune différence n'a été trouvé !</p>
+    </div>
+    {elseif isset($bddDiff)}
+    <div id="reponse">
+      <!-- HTML & SQL -->
+      <table id="tableauBddDiff">
+        {foreach from=$bddDiff->getTableauDeDiffs() item=diffDeTable}
+        <tr>
+          <td>
+            <strong>{$messHTMLTable[$diffDeTable->getAction()]}</strong>
+            la table <span class="nomTable">{$diffDeTable->getNom()}</span><br />
+            {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp}
+            {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
+            <strong>{$messHTMLChamp[diffBdd::ACTION_CREATE]}</strong>
+            le champ <span class="nomChamp">{$diffDeChamp->getNom()}</span><br />
+            {elseif $diffDeChamp->getAction() != diffBdd::ACTION_SAME}
+            <strong>{$messHTMLChamp[$diffDeChamp->getAction()]}</strong>
+            le champ <span class="nomChamp">{$diffDeChamp->getChamp()->getNom()}</span><br />
+            {/if}
+            {/foreach}
+          </td>
+          <td>
+            <code>
+              {$messSQLTable[$diffDeTable->getAction()]}{$diffDeTable->getNom()}
+              {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}(<br />{else}<br />{/if}
+              {foreach from=$diffDeTable->getTableauDeChamps() item=diffDeChamp name=diff}
+              {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}
+              {$diffDeChamp->getNom()} {$diffDeChamp->getColtype()}
+              {$diffDeChamp->getNullable()}
+              {else $diffDeTable->getAction() != diffBdd::ACTION_ALTER}
+              {assign var='champ' value=$diffDeChamp->getChamp()}
+              {$messSQLChamp[$diffDeChamp->getAction()]}{$champ->getNom()}
+              {if $diffDeChamp->getAction() != DiffBdd::ACTION_DROP}
+              {$champ->getColtype()} {$champ->getNullable()}
+              {/if}
+              {/if}
+              {if $smarty.foreach.diff.last}{else},{/if}<br />
+              {/foreach}
+              {if $diffDeTable->getAction() == diffBdd::ACTION_CREATE}){/if}
+            </code>
+          </td>
+        </tr>
+        {/foreach}
+      </table>
+    </div>
+    {/if}
+  </body>
 </html>
